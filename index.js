@@ -1,8 +1,12 @@
+
 const express = require('express')
+const exphbs = require('express-handlebars');
 const app = express()
 const path = require('path')
 var Connection = require('tedious').Connection;
 var Request = require('tedious').Request;
+
+
 
 //Database connection
 var config = {
@@ -42,7 +46,7 @@ function executeStatement() {
         if (err) {
             throw err;
         }
-        
+
         console.log('DONE!');
         connection.close();
     });
@@ -72,13 +76,21 @@ function executeStatement() {
 app.set('port', 3000)
 
 //middlewares
-app.use(express.static(path.join(__dirname, 'public')))
+app.engine('hbs', exphbs.engine({
+    defaultLayout: 'main',
+    extname: '.hbs'
+}));
+
+app.set('view engine', 'hbs');
+//app.use(express.static(path.join(__dirname, 'public')))
+
 
 
 //routes
-app.get('/', (req, res) => {
-    res.send('Bienvenidos')
-})
+app.get('/', function (req, res) {
+    res.render('home');
+    //res.render('employe');
+});
 
 app.listen(app.get('port'), () => {
     console.log(`Aplicacion corriendo en el puerto ${app.get('port')}`)
